@@ -2,8 +2,9 @@ import tkinter as tk
 
 from ttw_save_editor.WonderlandsSave import WonderlandsSave
 from ttw_save_editor.constants import MELEE, WEAPON1, WEAPON2, WEAPON3, WEAPON4, RING1, SHIELD, Amulet, RING2, \
-    Pauldrons, SPELL, slot_to_eng
+    Pauldrons, SPELL, slot_to_eng, MONEY
 from ui import menu, kadala
+from tkinter import filedialog as fd
 
 
 class Kadala:
@@ -17,6 +18,9 @@ class Kadala:
         self.slot_to = None
 
         self.name = None
+        self.gold = 0
+        self.cost = 250000
+        self.gambled = 0
 
     def set_slot(self, slot_name):
         self.slot_from = slot_name
@@ -25,17 +29,21 @@ class Kadala:
     def load_save_from(self, path):
         self.save_from = WonderlandsSave(path)
         self.name = self.save_from.get_char_name()
+        self.gold = self.save_from.get_currency(MONEY)
         self.update_ui()
 
     def load_save(self):
         self.save_path_from = menu.open()
         self.load_save_from(self.save_path_from)
 
-    def save_as(self):
+    def save_to(self):
         f = fd.asksaveasfile(mode='w', filetypes=[('Save File', '*.sav')])
         if f is None:
             return
         self.new_save.save_to(f.name)
+
+    def gamble(self):
+        pass
 
     def start_gui(self):
         global root
@@ -110,7 +118,11 @@ class Kadala:
         else:
             self.ui.text_name.set("")
 
-        if self.slot_from != None and self.slot_to != None:
+        self.ui.text_gold.set(self.gold)
+        self.ui.text_price.set(self.cost)
+        self.ui.label_gambled.set(self.gambled)
+
+        if self.slot_from != None:
             self.ui.label_status.configure(text="Ready !")
         else:
             self.ui.label_status.configure(text="Waiting...")
@@ -145,15 +157,13 @@ class Kadala:
             self.ui.Button4_1_1_1_1_1_1_1_1_1.configure(state="normal")
             self.ui.Button4_1_1_1_1_1_1_1_1_1_1.configure(state="normal")
 
-        if self.slot_from != None and self.slot_to!= None:
-            self.ui.Button3.configure(state="normal")
-        else:
-            self.ui.Button3.configure(state="disabled")
-
         if self.slot_from != None:
             self.ui.Button1.configure(state="normal")
         else:
             self.ui.Button1.configure(state="disabled")
+
+        if self.save_from and self.slot_from != None:
+            self.ui.button_gamble.configure(state="normal")
 
 
 
