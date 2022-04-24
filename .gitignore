@@ -134,3 +134,4 @@ venv.bak/
 .idea/
 
 backups/*.bak*
+backups/

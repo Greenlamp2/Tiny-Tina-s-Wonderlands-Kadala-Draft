@@ -3,7 +3,7 @@ import tkinter as tk
 from ttw_save_editor.WonderlandsSave import WonderlandsSave
 from ttw_save_editor.constants import MELEE, WEAPON1, WEAPON2, WEAPON3, WEAPON4, RING1, SHIELD, Amulet, RING2, \
     Pauldrons, SPELL, slot_to_eng
-from ui import menu, kadalaUI
+from ui import menu, kadala
 
 
 class Kadala:
@@ -19,10 +19,7 @@ class Kadala:
         self.name = None
 
     def set_slot(self, slot_name):
-        if not self.slot_from:
-            self.slot_from = slot_name
-        elif not self.slot_to:
-            self.slot_to = slot_name
+        self.slot_from = slot_name
         self.update_ui()
 
     def load_save_from(self, path):
@@ -46,7 +43,7 @@ class Kadala:
         root.protocol( 'WM_DELETE_WINDOW' , root.destroy)
         global _top1, _w1
         _top1 = root
-        _w1 = kadalaUI.Toplevel1(self, _top1)
+        _w1 = kadala.Toplevel1(self, _top1)
         root.mainloop()
 
     def proceed(self):
@@ -108,12 +105,6 @@ class Kadala:
         else:
             self.ui.label_from.configure(text="None")
 
-        if self.slot_to != None:
-            to_name = slot_to_eng[self.slot_to]
-            self.ui.label_to.configure(text=to_name)
-        else:
-            self.ui.label_to.configure(text="None")
-
         if self.name:
             self.ui.text_name.set(self.name)
         else:
@@ -163,11 +154,6 @@ class Kadala:
             self.ui.Button1.configure(state="normal")
         else:
             self.ui.Button1.configure(state="disabled")
-
-        if self.slot_to != None:
-            self.ui.Button1_1.configure(state="normal")
-        else:
-            self.ui.Button1_1.configure(state="disabled")
 
 
 
