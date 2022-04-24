@@ -19,32 +19,18 @@ class WonderlandsItem(datalib.BL3Serial):
         self.protobuf = protobuf
         super().__init__(self.protobuf.item_serial_number, datawrapper)
 
-    @staticmethod
-    def reverse_item_serial(serial_number):
-        c = BL3Serial.decode_serial_base64(serial_number)
-        datawrapper = datalib.DataWrapper()
-        return datalib.BL3Serial(c, datawrapper)
 
     @staticmethod
     def add_random(item):
-        original_item = WonderlandsItem.reverse_item_serial(item.get_serial_base64())
         db = Items()
-        db.load('export/gun_balances_long.csv', "GUNS")
-        db.load('export/shield_balances_long.csv', "SHIELDS")
-        db.load('export/pauldron_balances_long.csv', "PAULDRONS")
-        db.load('export/spell_balances_long.csv', "SPELLS")
-        db.load('export/ring_balances_long.csv', "RINGS")
-        db.load('export/amulet_balances_long.csv', "AMULETS")
-        db.load('export/melee_balances_long.csv', "MELEE")
-        new_parts = db.generate_random(item)
-        item.set_parts(new_parts)
-        item_type = db.get_random_type()
-        item.set_item_type(item_type)
-        if db.is_legit(item, silent=True):
-            return item
-        else:
-            print("it was not legit, generating a new one")
-            return WonderlandsItem.add_random(original_item)
+        db.load('../export/gun_balances_long.csv', "GUNS")
+        db.load('../export/shield_balances_long.csv', "SHIELDS")
+        db.load('../export/pauldron_balances_long.csv', "PAULDRONS")
+        db.load('../export/spell_balances_long.csv', "SPELLS")
+        db.load('../export/ring_balances_long.csv', "RINGS")
+        db.load('../export/amulet_balances_long.csv', "AMULETS")
+        db.load('../export/melee_balances_long.csv', "MELEE")
+        return db.generate_random(item)
 
     @staticmethod
     def create(datawrapper, serial_number, pickup_order_idx, skin_path='', is_seen=True, is_favorite=False, is_trash=False):

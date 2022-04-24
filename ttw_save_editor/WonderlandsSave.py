@@ -502,7 +502,7 @@ class WonderlandsSave(object):
     def generate_random_item(self, original_item, count):
         for i in range(0, count):
             new_item_raw = WonderlandsItem.add_random(original_item)
-            print("[{}] creating {}".format(i, new_item_raw.get_serial_base64()))
+            # print("[{}] creating {}".format(i, new_item_raw.get_serial_base64()))
             new_item = self.create_new_item(new_item_raw.get_serial_number())
             self.add_item(new_item)
 
