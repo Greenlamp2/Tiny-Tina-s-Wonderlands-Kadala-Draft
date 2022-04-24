@@ -1,4 +1,7 @@
+import os.path
+import shutil
 import tkinter as tk
+from datetime import datetime
 
 from ttw_save_editor.WonderlandsSave import WonderlandsSave
 from ttw_save_editor.constants import MELEE, WEAPON1, WEAPON2, WEAPON3, WEAPON4, RING1, SHIELD, Amulet, RING2, \
@@ -18,7 +21,7 @@ class Kadala:
 
         self.name = None
         self.gold = 0
-        self.cost = 250000
+        self.cost = 300000
         self.gambled = 0
         self.equips = {
             "melee": "None",
@@ -38,8 +41,20 @@ class Kadala:
         self.slot_from = slot_name
         self.update_ui()
 
+    def backup_save(self):
+        target_to_save = self.save_path_from
+        if not os.path.isdir("save_backups/"):
+            os.mkdir("save_backups/")
+        dt = datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
+        folder = "save_backups/{}/".format(dt)
+        if not os.path.isdir(folder):
+            os.mkdir(folder)
+        filename = target_to_save.split("/")[-1]
+        final = "{}{}".format(folder, filename)
+        shutil.copyfile(target_to_save, final)
+
+
     def get_equips(self):
-        a = self.save_from.get_item_at(MELEE).balance_short
         self.equips["melee"] = self.save_from.get_item_at(MELEE).balance_short.split("_")[-1]
         self.equips["w1"] = self.save_from.get_item_at(WEAPON1).balance_short.split("BALANCE_M")[-1]
         self.equips["w2"] = self.save_from.get_item_at(WEAPON2).balance_short.split("BALANCE_M")[-1]
@@ -55,27 +70,36 @@ class Kadala:
 
     def load_save(self):
         self.save_path_from = menu.open()
+        self.backup_save()
         self.load_save_from(self.save_path_from)
 
+    def can_gamble(self):
+        return self.gold >= self.cost
+
     def save_to(self):
+        self.new_save = self.save_from
+        self.ui.label_status.configure(text="Success !")
         f = fd.asksaveasfile(mode='w', filetypes=[('Save File', '*.sav')])
         if f is None:
             return
         self.new_save.save_to(f.name)
 
     def gamble(self):
-        self.ui.button_gamble.configure(state="disabled")
-        target = self.save_from.get_item_at(self.slot_from)
-        success = False
-        while not success:
-            try:
-                self.save_from.generate_random_item(target, 1)
-                self.gambled = self.gambled + 1
-                self.ui.button_gamble.configure(state="normal")
-                self.update_ui()
-                success = True
-            except:
-                pass
+        if self.can_gamble():
+            self.ui.button_gamble.configure(state="disabled")
+            target = self.save_from.get_item_at(self.slot_from)
+            success = False
+            self.gold -= self.cost
+            while not success:
+                try:
+                    self.save_from.generate_random_item(target, 1)
+                    self.gambled = self.gambled + 1
+                    self.ui.button_gamble.configure(state="normal")
+                    self.update_ui()
+                    success = True
+                except:
+                    pass
+            self.save_from.set_currency(MONEY, self.gold)
 
     def start_gui(self):
         global root
@@ -85,11 +109,6 @@ class Kadala:
         _top1 = root
         _w1 = kadala.Toplevel1(self, _top1)
         root.mainloop()
-
-    def proceed(self):
-        self.new_save = self.save_to
-        self.new_save.clone_PT(self.save_from)
-        self.save_as()
 
     def select_offhand(self):
         self.set_slot(MELEE)
@@ -134,7 +153,6 @@ class Kadala:
 
     def transfer(self):
         self.new_save = self.save_from
-        self.new_save.transfertEnchant(self.slot_to, self.slot_from)
         self.save_as()
         self.ui.label_status.configure(text="Success !")
 
@@ -206,7 +224,12 @@ class Kadala:
             self.ui.Button1.configure(state="disabled")
 
         if self.save_from and self.slot_from != None:
+            self.ui.button_save_to.configure(state="normal")
+
+        if self.can_gamble() and self.save_from and self.slot_from != None:
             self.ui.button_gamble.configure(state="normal")
+        else:
+            self.ui.button_gamble.configure(state="disabled")
 
 
 
