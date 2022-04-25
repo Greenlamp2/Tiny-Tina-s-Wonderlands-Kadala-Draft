@@ -5448,7 +5448,7 @@ HawkinsWrath,,Named Weapon,Balance_SG_Torgue_05_HawkinsWrath,SCOPE,1,1,1,Part_SG
 HawkinsWrath,,Named Weapon,Balance_SG_Torgue_05_HawkinsWrath,SCOPE,1,1,1,Part_SG_Torgue_Scope_03,,
 HawkinsWrath,,Named Weapon,Balance_SG_Torgue_05_HawkinsWrath,ELEMENTAL,1,1,0.25,Part_SG_Torgue_Ele_Fire,,
 HawkinsWrath,,Named Weapon,Balance_SG_Torgue_05_HawkinsWrath,MATERIAL,1,1,1,Part_SG_Torgue_Material_HawkinsWrath,,
-Catatumbo,,Named Weapon,Balance_PS_JAK_05_Catatumbo,BODY,2,2,1,Part_PS_JAK_Body,,
+Catatumbo,,Named Weapon,Balance_PS_JAK_05_Catatumbo,BODY,1,1,1,Part_PS_JAK_Body,,
 Catatumbo,,Named Weapon,Balance_PS_JAK_05_Catatumbo,BODY ACCESSORY,3,3,1,Part_PS_JAK_Body_A,Part_PS_JAK_Body,
 Catatumbo,,Named Weapon,Balance_PS_JAK_05_Catatumbo,BODY ACCESSORY,3,3,1,Part_PS_JAK_Body_B,Part_PS_JAK_Body,
 Catatumbo,,Named Weapon,Balance_PS_JAK_05_Catatumbo,BODY ACCESSORY,3,3,1,Part_PS_JAK_Body_C,Part_PS_JAK_Body,
@@ -6757,8 +6757,8 @@ IronSides,,Named Weapon,Balance_SR_JAK_05_IronSides,STOCK ACCESSORY,1,1,1,Part_S
 IronSides,,Named Weapon,Balance_SR_JAK_05_IronSides,FOREGRIP,1,1,1,Part_SR_JAK_Foregrip_04,,Part_SR_JAK_Barrel_04
 IronSides,,Named Weapon,Balance_SR_JAK_05_IronSides,MATERIAL,1,1,1,Part_SR_JAK_Mat_Ironsides,,
 Mistrial,,Named Weapon,Balance_DAL_AR_Mistrial,BODY,1,1,1,Part_DAL_AR_Body,,
-Mistrial,,Named Weapon,Balance_DAL_AR_Mistrial,BODY ACCESSORY,3,3,1,Part_DAL_AR_Body_A,Part_DAL_AR_Body,
-Mistrial,,Named Weapon,Balance_DAL_AR_Mistrial,BODY ACCESSORY,3,3,1,Part_DAL_AR_Body_C,Part_DAL_AR_Body,
+Mistrial,,Named Weapon,Balance_DAL_AR_Mistrial,BODY ACCESSORY,2,2,1,Part_DAL_AR_Body_A,Part_DAL_AR_Body,
+Mistrial,,Named Weapon,Balance_DAL_AR_Mistrial,BODY ACCESSORY,2,2,1,Part_DAL_AR_Body_C,Part_DAL_AR_Body,
 Mistrial,,Named Weapon,Balance_DAL_AR_Mistrial,BARREL,1,1,1,Part_DAL_AR_Barrel_Mistrial,,
 Mistrial,,Named Weapon,Balance_DAL_AR_Mistrial,BARREL 2,3,3,1,Part_DAL_AR_Barrel_03_A,,"Part_DAL_AR_Barrel_01, Part_DAL_AR_Barrel_02, Part_DAL_AR_Barrel_04"
 Mistrial,,Named Weapon,Balance_DAL_AR_Mistrial,BARREL 2,3,3,1,Part_DAL_AR_Barrel_03_B,,"Part_DAL_AR_Barrel_01, Part_DAL_AR_Barrel_02, Part_DAL_AR_Barrel_04"
