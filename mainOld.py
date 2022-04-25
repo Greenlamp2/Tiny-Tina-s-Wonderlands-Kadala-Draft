@@ -15,10 +15,10 @@ if __name__ == '__main__':
     db.load('export/melee_balances_long.csv', "MELEE")
 
     serial = "TTW(BQAAAABMOYC7JioAgTKAeEREJqAAAAAA)"
-    item = WonderlandsItem.reverse_item_serial(serial)
+    item = db.reverse_item_serial(serial)
     new_item = db.generate_random(item)
 
     __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
     save_a = WonderlandsSave(os.path.join(__location__, "saves_test/9.sav"))
-    save_a.generate_random_item(item, 1)
+    save_a.generate_random_item(db, item, 1)
     save_a.save_to("saves_test/9.sav")

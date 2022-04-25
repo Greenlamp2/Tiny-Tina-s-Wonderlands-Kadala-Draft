@@ -24,6 +24,7 @@
 import io
 import json
 import lzma
+import os
 import struct
 import base64
 import random
@@ -700,10 +701,10 @@ class InventorySerialDB(object):
         only want to do it if we're doing an operation which requires it.
         """
         if not self.initialized:
-            with lzma.open(io.BytesIO(pkg_resources.resource_string(
-                    __name__, '../db/inventoryserialdb.json.xz'
-                    ))) as df:
-                self.db = json.load(df)
+            test = "{}/db/inventoryserialdb.json.xz".format(os.getcwd())
+            with open(test, "rb") as f:
+                with lzma.open(f) as data:
+                    self.db = json.load(data)
             self.initialized = True
 
             # I generally shy away from complex one-liners like this, but eh?
@@ -784,10 +785,10 @@ class BalanceToName(object):
         only want to do it if we're doing an operation which requires it.
         """
         if not self.initialized:
-            with lzma.open(io.BytesIO(pkg_resources.resource_string(
-                    __name__, '../db/balance_name_mapping.json.xz'
-                    ))) as df:
-                self.mapping = json.load(df)
+            test = "{}/db/balance_name_mapping.json.xz".format(os.getcwd())
+            with open(test, "rb") as f:
+                with lzma.open(f) as data:
+                    self.mapping = json.load(data)
             self.initialized = True
 
     def get(self, balance):
@@ -820,10 +821,10 @@ class BalanceToInvKey(object):
         only want to do it if we're doing an operation which requires it.
         """
         if not self.initialized:
-            with lzma.open(io.BytesIO(pkg_resources.resource_string(
-                    __name__, '../db/balance_to_inv_key.json.xz'
-                    ))) as df:
-                self.mapping = json.load(df)
+            test = "{}/db/balance_to_inv_key.json.xz".format(os.getcwd())
+            with open(test, "rb") as f:
+                with lzma.open(f) as data:
+                    self.mapping = json.load(data)
             self.initialized = True
 
     def get(self, balance):
