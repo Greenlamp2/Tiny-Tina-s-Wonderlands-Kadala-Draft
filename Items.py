@@ -204,6 +204,7 @@ class Items:
             "Ranger": "Medium",
             "Rogue": "Medium",
             "Barbarian": "Heavy",
+            "Knight": "Heavy",
             "Necromancer": "Medium",
         }
         self.spread = {
@@ -390,6 +391,7 @@ class Items:
             return False
 
         if "/Pauldrons" in item.balance:
+            # print(item.get_serial_base64())
             if self.has_wrong_pauldron_stats(item.balance_short, parts_list_long):
                 return False
 
