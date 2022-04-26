@@ -72,6 +72,7 @@ class Items:
     def check_excluders(self, new_part, prev):
         whatihave = {}
         whatifear = {}
+        whatihave[new_part.category] = [new_part.parts]
         for elm in prev:
             if elm.category not in whatihave:
                 whatihave[elm.category] = []
@@ -81,6 +82,17 @@ class Items:
             if cat not in whatifear:
                 whatifear[cat] = []
             whatifear[cat].append(elm)
+
+        for part in prev:
+            for elm in part.excluders:
+                cat = self.get_category(part.balance, elm.replace('\\', '/').split('/')[-1])
+                if not cat:
+                    rare = True
+                    continue
+                if cat not in whatifear:
+                    whatifear[cat] = []
+                if elm not in whatifear[cat]:
+                    whatifear[cat].append(elm)
 
         # return True if one value of whatihave is in whatineed for each key
         for key, value in whatifear.items():
@@ -148,6 +160,8 @@ class Items:
         if m == 0:
             return ret
         while len(ret) < m:
+            if len(pool) == 0:
+                return ret
             n = random.randint(0, len(pool) - 1)
             target = pool[n]
             if self.check_excluders(target, prev+ret) and self.check_included(target, prev+ret):

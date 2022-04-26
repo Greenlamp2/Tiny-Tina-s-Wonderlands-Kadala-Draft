@@ -20,6 +20,7 @@ if __name__ == '__main__':
     mod_bladesinger = "TTW(BQAAAADzsIA7LAbhh4oEEHCeC3fDYUnqoIMOuukSosQSzaCDgQAAAAAI)"
     amulet_theruge = "TTW(BQAAAABiwIA7HyLAgDKuMpbygwMAAAA=)"
     ring = "TTW(BQAAAABMOYC7JioAgTKAeEREJqAAAAAA)"
+    crash = "TTW(BQAAAACya4A7ecCAgJIckMhDSCwOJ6mXqAOKVVCZICAEAAAAAAAgAwIAAA==)"
     item = db.reverse_item_serial(mod_bladesinger)
     new_item = db.generate_random(item)
     print(new_item.get_serial_base64())
