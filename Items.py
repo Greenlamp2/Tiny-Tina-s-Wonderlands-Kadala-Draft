@@ -70,9 +70,6 @@ class Items:
         return pool[n]
 
     def check_excluders(self, new_part, prev):
-        if len(new_part.excluders) == 0:
-            return True
-
         whatihave = {}
         whatifear = {}
         for elm in prev:
@@ -155,6 +152,7 @@ class Items:
             target = pool[n]
             if self.check_excluders(target, prev+ret) and self.check_included(target, prev+ret):
                 ret.append(target)
+                print(target.parts)
             else:
                 pool.sort(key=sort_fn)
                 new_pool = [elm for elm in pool if elm.parts != target.parts]
@@ -198,13 +196,17 @@ class Items:
         return item
 
     def is_legit(self, item, silent=False):
+        all_parts = self.get_parts(item.balance_short)
         item_parts = item.parts
         counts = {}
         parts_list_long = []
+        cats = []
         for part, id in item_parts:
             part_name = part.split('.')[-1]
             parts_list_long.append(part)
             cat = self.get_category(item.balance_short, part_name)
+            if cat not in cats:
+                cats.append(cat)
             if not cat:
                 if not silent:
                     print("{} for {} is not a possible part".format(part_name, item.balance_short, cat))
@@ -218,6 +220,15 @@ class Items:
                 if not silent:
                     print("{} for {} is not a possible part as {}".format(part_name, item.balance_short, cat))
                 return False
+
+        cats = [item for item in list(all_parts.keys()) if item not in cats]
+        for key in cats:
+            min = all_parts[key][0].min_parts
+            if min > 0:
+                if not silent:
+                    print("{} for {} should be {} min but there is none".format(key, item.balance_short, min))
+                return False
+
 
         for key, value in counts.items():
             min, max = self.get_min_max(item, key)
