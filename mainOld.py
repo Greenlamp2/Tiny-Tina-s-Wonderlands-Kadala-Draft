@@ -13,7 +13,6 @@ if __name__ == '__main__':
     db.load('export/ring_balances_long.csv', "RINGS")
     db.load('export/amulet_balances_long.csv', "AMULETS")
     db.load('export/melee_balances_long.csv', "MELEE")
-    db.setup()
 
     liquid_cooling = "TTW(BQAAAAA7kIA745WggIKuqaIsOpIg1PBYMsODgBAAAAAAAKCMAQEB)"
     materwork = "TTW(BQAAAAAt4IC76J0ggnomj4gEEtzxKhqcaDQUBgEhAAAAAACAGQMEAA==)"
