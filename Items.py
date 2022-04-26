@@ -93,9 +93,9 @@ class Items:
                 if elm not in whatifear[cat]:
                     whatifear[cat].append(elm)
 
-        oneOf = ["BODY ACCESSORY", "BARREL", "BARREL 2"]
+        multiple = ["MINOR", "PASSIVE SKILL PARTS", "PLAYER STAT"]
         if new_part.category in whatihave:
-            if new_part.category in oneOf:
+            if new_part.category not in multiple:
                 if new_part.category not in whatifear:
                     whatifear[new_part.category] = [new_part.parts]
                 else:
