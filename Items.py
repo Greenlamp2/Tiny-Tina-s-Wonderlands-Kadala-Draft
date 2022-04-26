@@ -373,19 +373,24 @@ class Items:
 
         whatihave = {}
         whatineed = {}
+        rare = False
         for elm in prev:
             if elm.category not in whatihave:
                 whatihave[elm.category] = []
             whatihave[elm.category].append(elm.parts)
         for elm in new_part.dependencies:
-            cat = self.get_category(new_part.balance, elm.replace('\\', '/').split('/')[-1])
+            part_name = elm.replace('\\', '/').split('/')[-1]
+            cat = self.get_category(new_part.balance, part_name)
             if not cat:
+                rare = True
                 continue
             if cat not in whatineed:
                 whatineed[cat] = []
             whatineed[cat].append(elm)
 
         # return True if one value of whatihave is in whatineed for each key
+        if len(whatineed.keys()) == 0 and rare:
+            return False
         for key, value in whatineed.items():
             if key not in whatihave:
                 return False
@@ -452,13 +457,10 @@ class Items:
         if m == 0:
             return ret
         while len(ret) < m:
-            if len(pool) == 0:
-                print("")
             n = random.randint(0, len(pool) - 1)
             target = pool[n]
-            name = target.parts
             if self.check_excluders(target, prev+ret) and self.check_included(target, prev+ret):
-                ret.append(pool[n])
+                ret.append(target)
             else:
                 pool.sort(key=sort_fn)
                 prev_count_occu = self.count_occurrence(pool)
@@ -467,44 +469,6 @@ class Items:
                 pool = new_pool
                 random.shuffle(pool)
         return ret
-
-    def get_part_with_dep_and_exc(self, values, dep=None, exc=None):
-        pool = []
-        for elm in values:
-            if len(elm.dependencies) > 1:
-                print("")
-            one_of = False
-            for depen in elm.dependencies:
-                if not one_of:
-                    for p in dep:
-                        if p.parts == depen:
-                            one_of = True
-                            break
-            included = not dep or len(elm.dependencies) == 0 or one_of
-            excluded = exc and (len(elm.excluders) > 0 and exc[0].parts in elm.excluders)
-            if included and not excluded:
-                pool.append(elm)
-        min, max = values[0].min_parts, values[0].max_parts
-        return self.get_random_min_max(pool, min, max)
-
-
-    def generate_new_pauldron_parts(self, item):
-        new_item_parts = []
-        all_parts = self.get_parts(item.balance_short)
-        body = self.get_part_with_dep_and_exc(all_parts["BODY"])
-        primary_class = self.get_part_with_dep_and_exc(all_parts["CLASS"], body, None)
-        body_secondary = self.get_part_with_dep_and_exc(all_parts["BODY SECONDARY"], None, body)
-        secondary_class = self.get_part_with_dep_and_exc(all_parts["CLASS SECONDARY"], body_secondary, primary_class)
-        class_stat = self.get_part_with_dep_and_exc(all_parts["CLASS STAT"], primary_class, None)
-        class_stat_secondary = self.get_part_with_dep_and_exc(all_parts["CLASS STAT SECONDARY"], secondary_class, class_stat)
-        legendary_aug = self.get_part_with_dep_and_exc(all_parts["LEGENDARY AUG"], None, None)
-        skill_combo = self.get_part_with_dep_and_exc(all_parts["PASSIVE SKILL COMBO"], primary_class+secondary_class, None)
-        # trim possible skill part
-        skill_part = self.get_part_with_dep_and_exc(all_parts["PASSIVE SKILL PARTS"], skill_combo, None)
-        player_stat = self.get_part_with_dep_and_exc(all_parts["PLAYER STAT"], body+body_secondary, None)
-        rarity = self.get_part_with_dep_and_exc(all_parts["RARITY"], body+body_secondary, None)
-        new_item_parts = body + primary_class + body_secondary + secondary_class + class_stat + class_stat_secondary + legendary_aug + skill_combo + skill_part + player_stat + rarity
-        return new_item_parts
 
     def get_legit_random_parts(self, item):
         new_item_parts = []
