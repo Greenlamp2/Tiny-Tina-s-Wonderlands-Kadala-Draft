@@ -1,4 +1,6 @@
 import os
+import random
+import sys
 
 from Items import Items
 from ttw_save_editor.WonderlandsItem import WonderlandsItem
@@ -20,7 +22,10 @@ if __name__ == '__main__':
     mod_bladesinger = "TTW(BQAAAADzsIA7LAbhh4oEEHCeC3fDYUnqoIMOuukSosQSzaCDgQAAAAAI)"
     amulet_theruge = "TTW(BQAAAABiwIA7HyLAgDKuMpbygwMAAAA=)"
     ring = "TTW(BQAAAABMOYC7JioAgTKAeEREJqAAAAAA)"
-    item = db.reverse_item_serial(mod_bladesinger)
+    crash = "TTW(BQAAAACya4A7ecCAgJIckMhDSCwOJ6mXqAOKVVCZICAEAAAAAAAgAwIAAA==)"
+    seed = random.randrange(sys.maxsize)
+    print("seed: [{}]".format(seed))
+    item = db.reverse_item_serial(crash)
     new_item = db.generate_random(item)
     print(new_item.get_serial_base64())
 
