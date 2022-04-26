@@ -72,7 +72,6 @@ class Items:
     def check_excluders(self, new_part, prev):
         whatihave = {}
         whatifear = {}
-        whatihave[new_part.category] = [new_part.parts]
         for elm in prev:
             if elm.category not in whatihave:
                 whatihave[elm.category] = []
@@ -93,6 +92,16 @@ class Items:
                     whatifear[cat] = []
                 if elm not in whatifear[cat]:
                     whatifear[cat].append(elm)
+
+        oneOf = ["BODY ACCESSORY", "BARREL", "BARREL 2"]
+        if new_part.category in whatihave:
+            if new_part.category in oneOf:
+                if new_part.category not in whatifear:
+                    whatifear[new_part.category] = [new_part.parts]
+                else:
+                    whatifear[new_part.category].append(new_part.parts)
+        else:
+            whatihave[new_part.category] = [new_part.parts]
 
         # return True if one value of whatihave is in whatineed for each key
         for key, value in whatifear.items():
@@ -166,7 +175,7 @@ class Items:
             target = pool[n]
             if self.check_excluders(target, prev+ret) and self.check_included(target, prev+ret):
                 ret.append(target)
-                print(target.parts)
+                # print(target.parts)
             else:
                 pool.sort(key=sort_fn)
                 new_pool = [elm for elm in pool if elm.parts != target.parts]

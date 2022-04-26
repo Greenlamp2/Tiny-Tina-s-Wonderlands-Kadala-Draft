@@ -103,47 +103,47 @@ class Kadala:
         melee = self.save_from.get_item_at(MELEE)
         self.equips["melee"]["name"] = melee.balance_short.split("_")[-1]
         test = "_Unique" in melee.balance
-        self.equips["melee"]["enable"] = "normal" if "_Unique" in melee.balance else "disabled"
+        self.equips["melee"]["enable"] = "normal" if "_Unique" in melee.balance else "normal"
 
         w1 = self.save_from.get_item_at(WEAPON1)
         self.equips["w1"]["name"] = w1.balance_short.split("Balance_")[-1]
-        self.equips["w1"]["enable"] = "normal" if "_Unique" in w1.balance else "disabled"
+        self.equips["w1"]["enable"] = "normal" if "_Unique" in w1.balance else "normal"
 
         w2 = self.save_from.get_item_at(WEAPON2)
         self.equips["w2"]["name"] = w2.balance_short.split("Balance_")[-1]
-        self.equips["w2"]["enable"] = "normal" if "_Unique" in w2.balance else "disabled"
+        self.equips["w2"]["enable"] = "normal" if "_Unique" in w2.balance else "normal"
 
         w3 = self.save_from.get_item_at(WEAPON3)
         self.equips["w3"]["name"] = w3.balance_short.split("Balance_")[-1]
-        self.equips["w3"]["enable"] = "normal" if "_Unique" in w3.balance else "disabled"
+        self.equips["w3"]["enable"] = "normal" if "_Unique" in w3.balance else "normal"
 
         w4 = self.save_from.get_item_at(WEAPON4)
         self.equips["w4"]["name"] = w4.balance_short.split("Balance_")[-1]
-        self.equips["w4"]["enable"] = "normal" if "_Unique" in w4.balance else "disabled"
+        self.equips["w4"]["enable"] = "normal" if "_Unique" in w4.balance else "normal"
 
         r1 = self.save_from.get_item_at(RING1)
         self.equips["r1"]["name"] = r1.balance_short.split("Balance_")[-1]
-        self.equips["r1"]["enable"] = "normal" if "_Unique" in r1.balance else "disabled"
+        self.equips["r1"]["enable"] = "normal" if "_Unique" in r1.balance else "normal"
 
         r2 = self.save_from.get_item_at(RING2)
         self.equips["r2"]["name"] = r2.balance_short.split("Balance_")[-1]
-        self.equips["r2"]["enable"] = "normal" if "_Unique" in r2.balance else "disabled"
+        self.equips["r2"]["enable"] = "normal" if "_Unique" in r2.balance else "normal"
 
         shield = self.save_from.get_item_at(SHIELD)
         self.equips["shield"]["name"] = shield.balance_short.split("Balance_")[-1]
-        self.equips["shield"]["enable"] = "normal" if "_Unique" in shield.balance else "disabled"
+        self.equips["shield"]["enable"] = "normal" if "_Unique" in shield.balance else "normal"
 
         amulet = self.save_from.get_item_at(Amulet)
         self.equips["amulet"]["name"] = amulet.balance_short.split("Balance_")[-1]
-        self.equips["amulet"]["enable"] = "normal" if "_Unique" in amulet.balance else "disabled"
+        self.equips["amulet"]["enable"] = "normal" if "_Unique" in amulet.balance else "normal"
 
         mod = self.save_from.get_item_at(Pauldrons)
         self.equips["mod"]["name"] = mod.balance_short.split("Balance_")[-1]
-        self.equips["mod"]["enable"] = "normal" if "_Unique" in mod.balance else "disabled"
+        self.equips["mod"]["enable"] = "normal" if "_Unique" in mod.balance else "normal"
 
         spell = self.save_from.get_item_at(SPELL)
         self.equips["spell"]["name"] = spell.balance_short.split("Balance_")[-1]
-        self.equips["spell"]["enable"] = "normal" if "_Unique" in spell.balance else "disabled"
+        self.equips["spell"]["enable"] = "normal" if "_Unique" in spell.balance else "normal"
 
     def load_save_from(self, path):
         self.save_from = WonderlandsSave(path)
