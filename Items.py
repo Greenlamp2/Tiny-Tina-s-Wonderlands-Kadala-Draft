@@ -205,14 +205,34 @@ class Items:
             "Rogue": "Medium",
             "Barbarian": "Heavy",
             "Knight": "Heavy",
-            "Necromancer": "Medium",
+            "Necromancer": "Light",
         }
         self.spread = {
             "Legendary": 5,
         }
+        self.excluders = {}
+        self.dependencies = {}
 
+    def setup(self):
         self.compute_clusters()
         self.compute_skill_combos()
+        self.compute_excluders_dependencies()
+
+    def compute_excluders_dependencies(self):
+        for balance, parts in self.items.items():
+            for part in parts:
+                if len(part.dependencies) > 0:
+                    for dependency in part.dependencies:
+                        if part.parts not in self.dependencies:
+                            self.dependencies[part.parts] = []
+                        if dependency not in self.dependencies[part.parts]:
+                            self.dependencies[part.parts].append(dependency)
+                if len(part.excluders) > 0:
+                    for excluder in part.excluders:
+                        if part.parts not in self.excluders:
+                            self.excluders[part.parts] = []
+                        if excluder not in self.excluders[part.parts]:
+                            self.excluders[part.parts].append(excluder)
 
     def compute_clusters(self):
         for cluster in self.clusters_raw:
@@ -260,8 +280,8 @@ class Items:
             ret[elm.category].append(elm)
         return ret
 
-    def get_category(self, item, part):
-        parts = self.items.get(item.balance_short, [])
+    def get_category(self, balance_short, part):
+        parts = self.items.get(balance_short, [])
         for elm in parts:
             if elm.parts and elm.parts.replace('\\', '/').split('/')[-1] == part:
                 return elm.category
@@ -310,16 +330,192 @@ class Items:
         n = random.randint(0, len(pool) - 1)
         return pool[n]
 
-    def get_legit_random_parts(self, item):
-        item_parts = item.parts
+    # def check_excluders(self, pool, new_part):
+    #     if new_part.parts in self.excluders:
+    #         excluders = self.excluders[new_part.parts]
+    #         for excluder in excluders:
+    #             if excluder in pool:
+    #                 return True
+    #     return False
+
+    def check_excluders(self, new_part, prev):
+        if len(new_part.excluders) == 0:
+            return True
+
+        whatihave = {}
+        whatifear = {}
+        for elm in prev:
+            if elm.category not in whatihave:
+                whatihave[elm.category] = []
+            whatihave[elm.category].append(elm.parts)
+        for elm in new_part.excluders:
+            cat = self.get_category(new_part.balance, elm.replace('\\', '/').split('/')[-1])
+            if cat not in whatifear:
+                whatifear[cat] = []
+            whatifear[cat].append(elm)
+
+        # return True if one value of whatihave is in whatineed for each key
+        for key, value in whatifear.items():
+            if key not in whatihave:
+                continue
+            not_found = True
+            for elm in value:
+                if elm in whatihave[key]:
+                    not_found = False
+                    break
+            if not not_found:
+                return False
+        return True
+
+    def check_included(self, new_part, prev):
+        if len(new_part.dependencies) == 0:
+            return True
+
+        whatihave = {}
+        whatineed = {}
+        for elm in prev:
+            if elm.category not in whatihave:
+                whatihave[elm.category] = []
+            whatihave[elm.category].append(elm.parts)
+        for elm in new_part.dependencies:
+            cat = self.get_category(new_part.balance, elm.replace('\\', '/').split('/')[-1])
+            if not cat:
+                continue
+            if cat not in whatineed:
+                whatineed[cat] = []
+            whatineed[cat].append(elm)
+
+        # return True if one value of whatihave is in whatineed for each key
+        for key, value in whatineed.items():
+            if key not in whatihave:
+                return False
+            found = False
+            for elm in value:
+                if elm in whatihave[key]:
+                    found = True
+                    break
+            if not found:
+                return False
+        return True
+
+
+    # def prev_get_random_min_max(self, parts, min, max, prev=None):
+    #     def sort_fn(elm):
+    #         return elm.parts
+    #     ret = []
+    #     pool = []
+    #     for part in parts:
+    #         if not part.parts:
+    #             continue
+    #         occurence = int((1.0 * part.weight) * 100)
+    #         for i in range(0, occurence):
+    #             pool.append(part)
+    #     random.shuffle(pool)
+    #
+    #     m = random.randint(min, max)
+    #     if m == 0:
+    #         return ret
+    #     while len(ret) < m:
+    #         n = random.randint(0, len(pool) - 1)
+    #         if not self.check_excluders(ret, pool[n]):
+    #             ret.append(pool[n])
+    #         else:
+    #             pool.sort(key=sort_fn)
+    #             new_pool = list(filter(lambda elm: elm.parts != pool[n].parts, pool))
+    #             pool = new_pool
+    #             random.shuffle(pool)
+    #     return ret
+
+    def count_occurrence(self, pool):
+        ret = {}
+        for elm in pool:
+            id = elm.parts.split("/")[-1]
+            if id not in ret:
+                ret[id] = 0
+            ret[id] += 1
+        return ret
+
+    def get_random_min_max(self, parts, min, max, prev=[]):
+        def sort_fn(elm):
+            return elm.parts
+        ret = []
+        pool = []
+        for part in parts:
+            if not part.parts:
+                continue
+            occurence = int((1.0 * part.weight) * 100)
+            for i in range(0, occurence):
+                pool.append(part)
+        random.shuffle(pool)
+
+        m = random.randint(min, max)
+        if m == 0:
+            return ret
+        while len(ret) < m:
+            if len(pool) == 0:
+                print("")
+            n = random.randint(0, len(pool) - 1)
+            target = pool[n]
+            name = target.parts
+            if self.check_excluders(target, prev+ret) and self.check_included(target, prev+ret):
+                ret.append(pool[n])
+            else:
+                pool.sort(key=sort_fn)
+                prev_count_occu = self.count_occurrence(pool)
+                new_pool = [elm for elm in pool if elm.parts != target.parts]
+                count_occu = self.count_occurrence(new_pool)
+                pool = new_pool
+                random.shuffle(pool)
+        return ret
+
+    def get_part_with_dep_and_exc(self, values, dep=None, exc=None):
+        pool = []
+        for elm in values:
+            if len(elm.dependencies) > 1:
+                print("")
+            one_of = False
+            for depen in elm.dependencies:
+                if not one_of:
+                    for p in dep:
+                        if p.parts == depen:
+                            one_of = True
+                            break
+            included = not dep or len(elm.dependencies) == 0 or one_of
+            excluded = exc and (len(elm.excluders) > 0 and exc[0].parts in elm.excluders)
+            if included and not excluded:
+                pool.append(elm)
+        min, max = values[0].min_parts, values[0].max_parts
+        return self.get_random_min_max(pool, min, max)
+
+
+    def generate_new_pauldron_parts(self, item):
         new_item_parts = []
         all_parts = self.get_parts(item.balance_short)
-        for part, id in item_parts:
-            part_name = part.split('.')[-1]
-            category = self.get_category(item, part_name)
-            possible_parts = all_parts[category]
-            new_part = self.get_random_part(possible_parts)
-            new_item_parts.append(new_part)
+        body = self.get_part_with_dep_and_exc(all_parts["BODY"])
+        primary_class = self.get_part_with_dep_and_exc(all_parts["CLASS"], body, None)
+        body_secondary = self.get_part_with_dep_and_exc(all_parts["BODY SECONDARY"], None, body)
+        secondary_class = self.get_part_with_dep_and_exc(all_parts["CLASS SECONDARY"], body_secondary, primary_class)
+        class_stat = self.get_part_with_dep_and_exc(all_parts["CLASS STAT"], primary_class, None)
+        class_stat_secondary = self.get_part_with_dep_and_exc(all_parts["CLASS STAT SECONDARY"], secondary_class, class_stat)
+        legendary_aug = self.get_part_with_dep_and_exc(all_parts["LEGENDARY AUG"], None, None)
+        skill_combo = self.get_part_with_dep_and_exc(all_parts["PASSIVE SKILL COMBO"], primary_class+secondary_class, None)
+        # trim possible skill part
+        skill_part = self.get_part_with_dep_and_exc(all_parts["PASSIVE SKILL PARTS"], skill_combo, None)
+        player_stat = self.get_part_with_dep_and_exc(all_parts["PLAYER STAT"], body+body_secondary, None)
+        rarity = self.get_part_with_dep_and_exc(all_parts["RARITY"], body+body_secondary, None)
+        new_item_parts = body + primary_class + body_secondary + secondary_class + class_stat + class_stat_secondary + legendary_aug + skill_combo + skill_part + player_stat + rarity
+        return new_item_parts
+
+    def get_legit_random_parts(self, item):
+        new_item_parts = []
+        all_parts = self.get_parts(item.balance_short)
+        for type, parts in all_parts.items():
+            if len(parts) == parts[0].min_parts:
+                new_item_parts += parts
+                continue
+            min, max = parts[0].min_parts, parts[0].max_parts
+            res = self.get_random_min_max(parts, min, max, new_item_parts)
+            new_item_parts += res
         return new_item_parts
 
     def reverse_item_serial(self, serial_number):
@@ -330,15 +526,16 @@ class Items:
     def get_serial_string(self, item):
         return item.get_serial_base64()
 
-    def generate_random(self, item):
-        original_item = self.reverse_item_serial(item.get_serial_base64())
+    def generate_random(self, original_item):
+        serial = original_item.get_serial_base64()
+        item = self.reverse_item_serial(serial)
         legit = False
         while not legit:
-            new_parts = self.get_legit_random_parts(original_item)
+            new_parts = self.get_legit_random_parts(item)
             item.set_parts(new_parts)
             item_type = self.get_random_type()
             item.set_item_type(item_type)
-            if self.is_legit(item, silent=True):
+            if self.is_legit(item):
                 legit = True
         return item
 
@@ -350,7 +547,7 @@ class Items:
         for part, id in item_parts:
             part_name = part.split('.')[-1]
             parts_list_long.append(part)
-            cat = self.get_category(item, part_name)
+            cat = self.get_category(item.balance_short, part_name)
             if not cat:
                 if not silent:
                     print("{} for {} is not a possible part".format(part_name, item.balance_short, cat))
@@ -364,14 +561,14 @@ class Items:
                 if not silent:
                     print("{} for {} is not a possible part as {}".format(part_name, item.balance_short, cat))
                 return False
-            if part_name in parts_list \
-                    and "Minor" not in part_name \
-                    and "_Enh_" not in part_name \
-                    and "_Aug_" not in part_name \
-                    and "_PassiveSkill_" not in part_name:
-                if not silent:
-                    print("{} for {} is present more than once".format(part_name, item.balance_short))
-                return False
+            # if part_name in parts_list \
+            #         and "Minor" not in part_name \
+            #         and "_Enh_" not in part_name \
+            #         and "_Aug_" not in part_name \
+            #         and "_PassiveSkill_" not in part_name:
+            #     if not silent:
+            #         print("{} for {} is present more than once".format(part_name, item.balance_short))
+            #     return False
             parts_list.append(part_name)
 
         for key, value in counts.items():
@@ -385,15 +582,15 @@ class Items:
                     print("{} for {} should be {} max but there is {}".format(key, item.balance_short, max, value))
                 return False
 
-        if self.has_excluders(item.balance_short, parts_list):
+        if self.has_excluders(item.balance_short, parts_list_long):
             return False
-        if not self.has_dependant(item.balance_short, parts_list):
+        if self.missing_dependant(item.balance_short, parts_list_long):
             return False
 
-        if "/Pauldrons" in item.balance:
-            # print(item.get_serial_base64())
-            if self.has_wrong_pauldron_stats(item.balance_short, parts_list_long):
-                return False
+        # if "/Pauldrons" in item.balance:
+        #     # print(item.get_serial_base64())
+        #     if self.has_wrong_pauldron_stats(item.balance_short, parts_list_long):
+        #         return False
 
         if not silent:
             print("{} is legit".format(item.balance_short))
@@ -500,6 +697,8 @@ class Items:
 
         skill_counts = {}
         for skill in skills:
+            if characterA == "Knight" or characterB == "Knight":
+                print("")
             t = self.combos[characterA][characterB]
             possible_skills = [
                 "{}_{}".format(characterA, t[0]),
@@ -540,30 +739,90 @@ class Items:
                 return i
         return None
 
-    def has_excluders(self, balance, parts_target):
+    def missing_dependant(self, balance, parts_target):
+        whatihave = {}
+        whatineed = {}
         for part in parts_target:
-            excluders = self.get_excluders(balance, part)
-            for partB in parts_target:
-                if partB in excluders:
-                    print('{} is a part excluded by {}'.format(partB, part))
-                    return True
+            part_name = part.replace('\\', '/')
+            cat = self.get_category(balance, part_name.split(".")[-1])
+            if cat not in whatihave:
+                whatihave[cat] = []
+            whatihave[cat].append(part.split(".")[0])
+            dependencies = self.get_dependant(balance, part_name.split(".")[0])
+            for elm in dependencies:
+                cat = self.get_category(balance, elm.replace('\\', '/').split('/')[-1])
+                if not cat:
+                    continue
+                if cat not in whatineed:
+                    whatineed[cat] = []
+                whatineed[cat].append(elm.split(".")[-1])
+
+        # return True if one value of whatihave is in whatineed for each key
+        for key, value in whatineed.items():
+            if key not in whatihave:
+                return True
+            found = False
+            for elm in value:
+                if elm in whatihave[key]:
+                    found = True
+                    break
+            if not found:
+                print("Missing dependency {} for {}".format(elm, key))
+                return True
         return False
 
-    def has_dependant(self, balance, parts_target):
+    def has_excluders(self, balance, parts_target):
+        whatihave = {}
+        whatifear = {}
         for part in parts_target:
-            dependant = self.get_dependant(balance, part)
-            if len(dependant) == 0:
-                continue
+            part_name = part.replace('\\', '/')
+            cat = self.get_category(balance, part_name.split(".")[-1])
+            if cat not in whatihave:
+                whatihave[cat] = []
+            whatihave[cat].append(part.split(".")[0])
+            excluders = self.get_excluders(balance, part_name.split(".")[0])
+            for elm in excluders:
+                cat = self.get_category(balance, elm.replace('\\', '/').split('/')[-1])
+                if not cat:
+                    continue
+                if cat not in whatifear:
+                    whatifear[cat] = []
+                whatifear[cat].append(elm.split(".")[-1])
 
-            dep = False
-            for partB in parts_target:
-                if partB in dependant:
-                    dep = True
+        for key, value in whatifear.items():
+            if key not in whatihave:
+                continue
+            not_found = True
+            for elm in value:
+                if elm in whatihave[key]:
+                    not_found = False
+                    print("{} is in conflict as {}".format(elm, key))
                     break
-            if not dep:
-                print('{} is missing a depencies in {}'.format(part, ', '.join(dependant)))
-                return False
-        return True
+            if not not_found:
+                return True
+        return False
+
+        #     for partB in parts_target:
+        #         if partB in excluders:
+        #             print('{} is a part excluded by {}'.format(partB, part))
+        #             return True
+        # return False
+
+    # def has_dependant(self, balance, parts_target):
+    #     for part in parts_target:
+    #         dependant = self.get_dependant(balance, part)
+    #         if len(dependant) == 0:
+    #             continue
+    #
+    #         dep = False
+    #         for partB in parts_target:
+    #             if partB in dependant:
+    #                 dep = True
+    #                 break
+    #         if not dep:
+    #             print('{} is missing a depencies in {}'.format(part, ', '.join(dependant)))
+    #             return False
+    #     return True
 
 
 class Item:
