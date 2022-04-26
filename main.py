@@ -25,20 +25,53 @@ class Kadala:
 
         self.name = None
         self.gold = 0
-        self.cost = 300000
+        self.cost = 150000
         self.gambled = 0
         self.equips = {
-            "melee": "None",
-            "w1": "None",
-            "w2": "None",
-            "w3": "None",
-            "w4": "None",
-            "ring1": "None",
-            "ring2": "None",
-            "amulet": "None",
-            "shield": "None",
-            "mod": "None",
-            "spell": "None",
+            "melee": {
+                "name": "None",
+                "enabled": "disabled",
+            },
+            "w1": {
+                "name": "None",
+                "enabled": "disabled",
+            },
+            "w2": {
+                "name": "None",
+                "enabled": "disabled",
+            },
+            "w3": {
+                "name": "None",
+                "enabled": "disabled",
+            },
+            "w4": {
+                "name": "None",
+                "enabled": "disabled",
+            },
+            "r1": {
+                "name": "None",
+                "enabled": "disabled",
+            },
+            "r2": {
+                "name": "None",
+                "enabled": "disabled",
+            },
+            "amulet": {
+                "name": "None",
+                "enabled": "disabled",
+            },
+            "shield": {
+                "name": "None",
+                "enabled": "disabled",
+            },
+            "mod": {
+                "name": "None",
+                "enabled": "disabled",
+            },
+            "spell": {
+                "name": "None",
+                "enabled": "disabled",
+            },
         }
         self.db = Items()
         self.db.load('export/gun_balances_long.csv', "GUNS")
@@ -67,17 +100,50 @@ class Kadala:
 
 
     def get_equips(self):
-        self.equips["melee"] = self.save_from.get_item_at(MELEE).balance_short.split("_")[-1]
-        self.equips["w1"] = self.save_from.get_item_at(WEAPON1).balance_short.split("Balance_")[-1]
-        self.equips["w2"] = self.save_from.get_item_at(WEAPON2).balance_short.split("Balance_")[-1]
-        self.equips["w3"] = self.save_from.get_item_at(WEAPON3).balance_short.split("Balance_")[-1]
-        self.equips["w4"] = self.save_from.get_item_at(WEAPON4).balance_short.split("Balance_")[-1]
-        self.equips["r1"] = self.save_from.get_item_at(RING1).balance_short.split("Balance_")[-1]
-        self.equips["r2"] = self.save_from.get_item_at(RING2).balance_short.split("Balance_")[-1]
-        self.equips["shield"] = self.save_from.get_item_at(SHIELD).balance_short.split("Balance_")[-1]
-        self.equips["amulet"] = self.save_from.get_item_at(Amulet).balance_short.split("Balance_")[-1]
-        self.equips["mod"] = self.save_from.get_item_at(Pauldrons).balance_short.split("Balance_")[-1]
-        self.equips["spell"] = self.save_from.get_item_at(SPELL).balance_short.split("Balance_")[-1]
+        melee = self.save_from.get_item_at(MELEE)
+        self.equips["melee"]["name"] = melee.balance_short.split("_")[-1]
+        test = "_Unique" in melee.balance
+        self.equips["melee"]["enable"] = "normal" if "_Unique" in melee.balance else "disabled"
+
+        w1 = self.save_from.get_item_at(WEAPON1)
+        self.equips["w1"]["name"] = w1.balance_short.split("Balance_")[-1]
+        self.equips["w1"]["enable"] = "normal" if "_Unique" in w1.balance else "disabled"
+
+        w2 = self.save_from.get_item_at(WEAPON2)
+        self.equips["w2"]["name"] = w2.balance_short.split("Balance_")[-1]
+        self.equips["w2"]["enable"] = "normal" if "_Unique" in w2.balance else "disabled"
+
+        w3 = self.save_from.get_item_at(WEAPON3)
+        self.equips["w3"]["name"] = w3.balance_short.split("Balance_")[-1]
+        self.equips["w3"]["enable"] = "normal" if "_Unique" in w3.balance else "disabled"
+
+        w4 = self.save_from.get_item_at(WEAPON4)
+        self.equips["w4"]["name"] = w4.balance_short.split("Balance_")[-1]
+        self.equips["w4"]["enable"] = "normal" if "_Unique" in w4.balance else "disabled"
+
+        r1 = self.save_from.get_item_at(RING1)
+        self.equips["r1"]["name"] = r1.balance_short.split("Balance_")[-1]
+        self.equips["r1"]["enable"] = "normal" if "_Unique" in r1.balance else "disabled"
+
+        r2 = self.save_from.get_item_at(RING2)
+        self.equips["r2"]["name"] = r2.balance_short.split("Balance_")[-1]
+        self.equips["r2"]["enable"] = "normal" if "_Unique" in r2.balance else "disabled"
+
+        shield = self.save_from.get_item_at(SHIELD)
+        self.equips["shield"]["name"] = shield.balance_short.split("Balance_")[-1]
+        self.equips["shield"]["enable"] = "normal" if "_Unique" in shield.balance else "disabled"
+
+        amulet = self.save_from.get_item_at(Amulet)
+        self.equips["amulet"]["name"] = amulet.balance_short.split("Balance_")[-1]
+        self.equips["amulet"]["enable"] = "normal" if "_Unique" in amulet.balance else "disabled"
+
+        mod = self.save_from.get_item_at(Pauldrons)
+        self.equips["mod"]["name"] = mod.balance_short.split("Balance_")[-1]
+        self.equips["mod"]["enable"] = "normal" if "_Unique" in mod.balance else "disabled"
+
+        spell = self.save_from.get_item_at(SPELL)
+        self.equips["spell"]["name"] = spell.balance_short.split("Balance_")[-1]
+        self.equips["spell"]["enable"] = "normal" if "_Unique" in spell.balance else "disabled"
 
     def load_save_from(self, path):
         self.save_from = WonderlandsSave(path)
@@ -193,29 +259,29 @@ class Kadala:
             self.ui.label_status.configure(text="Waiting...")
 
         if self.save_from:
-            self.ui.label_melee.configure(text=self.equips["melee"])
-            self.ui.label_w1.configure(text=self.equips["w1"])
-            self.ui.label_w2.configure(text=self.equips["w2"])
-            self.ui.label_w3.configure(text=self.equips["w3"])
-            self.ui.label_w4.configure(text=self.equips["w4"])
-            self.ui.label_r1.configure(text=self.equips["r1"])
-            self.ui.label_r2.configure(text=self.equips["r2"])
-            self.ui.label_amulet.configure(text=self.equips["amulet"])
-            self.ui.label_shield.configure(text=self.equips["shield"])
-            self.ui.label_mod.configure(text=self.equips["mod"])
-            self.ui.label_spell.configure(text=self.equips["spell"])
+            self.ui.label_melee.configure(text=self.equips["melee"]["name"])
+            self.ui.label_w1.configure(text=self.equips["w1"]["name"])
+            self.ui.label_w2.configure(text=self.equips["w2"]["name"])
+            self.ui.label_w3.configure(text=self.equips["w3"]["name"])
+            self.ui.label_w4.configure(text=self.equips["w4"]["name"])
+            self.ui.label_r1.configure(text=self.equips["r1"]["name"])
+            self.ui.label_r2.configure(text=self.equips["r2"]["name"])
+            self.ui.label_amulet.configure(text=self.equips["amulet"]["name"])
+            self.ui.label_shield.configure(text=self.equips["shield"]["name"])
+            self.ui.label_mod.configure(text=self.equips["mod"]["name"])
+            self.ui.label_spell.configure(text=self.equips["spell"]["name"])
 
-            ToolTip(self.ui.label_melee, "TkDefaultFont", self.equips["melee"])
-            ToolTip(self.ui.label_w1, "TkDefaultFont", self.equips["w1"])
-            ToolTip(self.ui.label_w2, "TkDefaultFont", self.equips["w2"])
-            ToolTip(self.ui.label_w3, "TkDefaultFont", self.equips["w3"])
-            ToolTip(self.ui.label_w4, "TkDefaultFont", self.equips["w4"])
-            ToolTip(self.ui.label_r1, "TkDefaultFont", self.equips["r1"])
-            ToolTip(self.ui.label_r2, "TkDefaultFont", self.equips["r2"])
-            ToolTip(self.ui.label_amulet, "TkDefaultFont", self.equips["amulet"])
-            ToolTip(self.ui.label_shield, "TkDefaultFont", self.equips["shield"])
-            ToolTip(self.ui.label_mod, "TkDefaultFont", self.equips["mod"])
-            ToolTip(self.ui.label_spell, "TkDefaultFont", self.equips["spell"])
+            ToolTip(self.ui.label_melee, "TkDefaultFont", self.equips["melee"]["name"])
+            ToolTip(self.ui.label_w1, "TkDefaultFont", self.equips["w1"]["name"])
+            ToolTip(self.ui.label_w2, "TkDefaultFont", self.equips["w2"]["name"])
+            ToolTip(self.ui.label_w3, "TkDefaultFont", self.equips["w3"]["name"])
+            ToolTip(self.ui.label_w4, "TkDefaultFont", self.equips["w4"]["name"])
+            ToolTip(self.ui.label_r1, "TkDefaultFont", self.equips["r1"]["name"])
+            ToolTip(self.ui.label_r2, "TkDefaultFont", self.equips["r2"]["name"])
+            ToolTip(self.ui.label_amulet, "TkDefaultFont", self.equips["amulet"]["name"])
+            ToolTip(self.ui.label_shield, "TkDefaultFont", self.equips["shield"]["name"])
+            ToolTip(self.ui.label_mod, "TkDefaultFont", self.equips["mod"]["name"])
+            ToolTip(self.ui.label_spell, "TkDefaultFont", self.equips["spell"]["name"])
 
         self.lock_all()
 
@@ -223,30 +289,17 @@ class Kadala:
     def lock_all(self):
         if self.save_from:
             self.ui.button_browse.configure(state="disabled")
-        if not self.save_from or self.slot_from != None:
-            self.ui.Button4.configure(state="disabled")
-            self.ui.Button4_1.configure(state="disabled")
-            self.ui.Button4_1_1.configure(state="disabled")
-            self.ui.Button4_1_1_1.configure(state="disabled")
-            self.ui.Button4_1_1_1_1.configure(state="disabled")
-            self.ui.Button4_1_1_1_1_1.configure(state="disabled")
-            self.ui.Button4_1_1_1_1_1_1.configure(state="disabled")
-            self.ui.Button4_1_1_1_1_1_1_1.configure(state="disabled")
-            self.ui.Button4_1_1_1_1_1_1_1_1.configure(state="disabled")
-            self.ui.Button4_1_1_1_1_1_1_1_1_1.configure(state="disabled")
-            self.ui.Button4_1_1_1_1_1_1_1_1_1_1.configure(state="disabled")
-        else:
-            self.ui.Button4.configure(state="normal")
-            self.ui.Button4_1.configure(state="normal")
-            self.ui.Button4_1_1.configure(state="normal")
-            self.ui.Button4_1_1_1.configure(state="normal")
-            self.ui.Button4_1_1_1_1.configure(state="normal")
-            self.ui.Button4_1_1_1_1_1.configure(state="normal")
-            self.ui.Button4_1_1_1_1_1_1.configure(state="normal")
-            self.ui.Button4_1_1_1_1_1_1_1.configure(state="normal")
-            self.ui.Button4_1_1_1_1_1_1_1_1.configure(state="normal")
-            self.ui.Button4_1_1_1_1_1_1_1_1_1.configure(state="normal")
-            self.ui.Button4_1_1_1_1_1_1_1_1_1_1.configure(state="normal")
+        self.ui.Button4.configure(state=self.equips["melee"]["enable"])
+        self.ui.Button4_1.configure(state=self.equips["w1"]["enable"])
+        self.ui.Button4_1_1.configure(state=self.equips["w2"]["enable"])
+        self.ui.Button4_1_1_1.configure(state=self.equips["w3"]["enable"])
+        self.ui.Button4_1_1_1_1.configure(state=self.equips["w4"]["enable"])
+        self.ui.Button4_1_1_1_1_1.configure(state=self.equips["r1"]["enable"])
+        self.ui.Button4_1_1_1_1_1_1.configure(state=self.equips["shield"]["enable"])
+        self.ui.Button4_1_1_1_1_1_1_1.configure(state=self.equips["amulet"]["enable"])
+        self.ui.Button4_1_1_1_1_1_1_1_1.configure(state=self.equips["r2"]["enable"])
+        self.ui.Button4_1_1_1_1_1_1_1_1_1.configure(state=self.equips["mod"]["enable"])
+        self.ui.Button4_1_1_1_1_1_1_1_1_1_1.configure(state=self.equips["spell"]["enable"])
 
         if self.slot_from != None:
             self.ui.Button1.configure(state="normal")

@@ -193,6 +193,8 @@ class Items:
             item.set_item_type(item_type)
             if self.is_legit(item):
                 legit = True
+            else:
+                print("was not legit, generating another one, please wait.")
         return item
 
     def is_legit(self, item, silent=False):
