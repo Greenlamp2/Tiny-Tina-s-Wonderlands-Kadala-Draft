@@ -249,6 +249,31 @@ class Items:
         return True
 
     def check_amount(self, new_part, prev):
+        parts_multiples = {}
+        for elm in prev:
+            multiple = ["MINOR", "PASSIVE SKILL PARTS", "PLAYER STAT"]
+            if elm.category in multiple:
+                if elm.category not in parts_multiples:
+                    parts_multiples[elm.category] = []
+                parts_multiples[elm.category].append(elm.parts)
+        # check passive skill amount
+        detail = {}
+        if "PASSIVE SKILL PARTS" in parts_multiples:
+            parts = parts_multiples["PASSIVE SKILL PARTS"]
+            for part in parts:
+                part_name = part.replace('\\', '/').split(".")[-1]
+                character = part_name.split("PassiveSkill_")[1].split("_")[0]
+                part_name_short = part_name.split("/")[-1]
+                if character not in detail:
+                    detail[character] = {}
+                if part_name_short not in detail[character]:
+                    detail[character][part_name_short] = 0
+                detail[character][part_name_short] += 1
+            for character, values in detail.items():
+                to_check = self.passive_skils[character]
+                for skill_name, value in values.items():
+                    if value > to_check[skill_name]:
+                        return False
         return True
 
     def get_random_min_max(self, parts, min, max, prev=[]):
