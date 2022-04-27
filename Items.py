@@ -8,6 +8,102 @@ from ttw_save_editor.datalib import BL3Serial
 class Items:
     def __init__(self):
         self.items = {}
+        self.passive_skils = {
+            "Rogue": {
+                "Part_P_PassiveSkill_Rogue_01": 3,
+                "Part_P_PassiveSkill_Rogue_02": 5,
+                "Part_P_PassiveSkill_Rogue_03": 1,
+                "Part_P_PassiveSkill_Rogue_04": 3,
+                "Part_P_PassiveSkill_Rogue_05": 5,
+                "Part_P_PassiveSkill_Rogue_06": 5,
+                "Part_P_PassiveSkill_Rogue_07": 5,
+                "Part_P_PassiveSkill_Rogue_08": 1,
+                "Part_P_PassiveSkill_Rogue_10": 3,
+                "Part_P_PassiveSkill_Rogue_12": 3,
+                "Part_P_PassiveSkill_Rogue_13": 1,
+                "Part_P_PassiveSkill_Rogue_14": 5,
+                "Part_P_PassiveSkill_Rogue_15": 3,
+                "Part_P_PassiveSkill_Rogue_17": 1,
+            },
+            "GunMage": {
+                "Part_P_PassiveSkill_GunMage_01": 5,
+                "Part_P_PassiveSkill_GunMage_02": 1,
+                "Part_P_PassiveSkill_GunMage_08": 3,
+                "Part_P_PassiveSkill_GunMage_09": 5,
+                "Part_P_PassiveSkill_GunMage_13": 5,
+                "Part_P_PassiveSkill_GunMage_14": 5,
+                "Part_P_PassiveSkill_GunMage_15": 1,
+                "Part_P_PassiveSkill_GunMage_16": 5,
+                "Part_P_PassiveSkill_GunMage_17": 1,
+                "Part_P_PassiveSkill_GunMage_18": 5,
+                "Part_P_PassiveSkill_GunMage_19": 1,
+                "Part_P_PassiveSkill_GunMage_20": 1,
+                "Part_P_PassiveSkill_GunMage_21": 3,
+            },
+            "Necro": {
+                "Part_P_PassiveSkill_Necro_01": 5,
+                "Part_P_PassiveSkill_Necro_02": 5,
+                "Part_P_PassiveSkill_Necro_03": 3,
+                "Part_P_PassiveSkill_Necro_04": 3,
+                "Part_P_PassiveSkill_Necro_05": 5,
+                "Part_P_PassiveSkill_Necro_06": 1,
+                "Part_P_PassiveSkill_Necro_08": 3,
+                "Part_P_PassiveSkill_Necro_09": 1,
+                "Part_P_PassiveSkill_Necro_10": 1,
+                "Part_P_PassiveSkill_Necro_12": 5,
+                "Part_P_PassiveSkill_Necro_13": 3,
+                "Part_P_PassiveSkill_Necro_14": 5,
+                "Part_P_PassiveSkill_Necro_15": 3,
+                "Part_P_PassiveSkill_Necro_17": 1,
+            },
+            "Barbarian": {
+                "Part_P_PassiveSkill_Barbarian_01": 5,
+                "Part_P_PassiveSkill_Barbarian_02": 5,
+                "Part_P_PassiveSkill_Barbarian_03": 3,
+                "Part_P_PassiveSkill_Barbarian_04": 3,
+                "Part_P_PassiveSkill_Barbarian_05": 5,
+                "Part_P_PassiveSkill_Barbarian_06": 3,
+                "Part_P_PassiveSkill_Barbarian_07": 3,
+                "Part_P_PassiveSkill_Barbarian_08": 1,
+                "Part_P_PassiveSkill_Barbarian_09": 3,
+                "Part_P_PassiveSkill_Barbarian_11": 1,
+                "Part_P_PassiveSkill_Barbarian_13": 5,
+                "Part_P_PassiveSkill_Barbarian_14": 5,
+                "Part_P_PassiveSkill_Barbarian_15": 1,
+                "Part_P_PassiveSkill_Barbarian_17": 1,
+            },
+            "Ranger": {
+                "Part_P_PassiveSkill_Ranger_01": 5,
+                "Part_P_PassiveSkill_Ranger_02": 5,
+                "Part_P_PassiveSkill_Ranger_03": 5,
+                "Part_P_PassiveSkill_Ranger_04": 3,
+                "Part_P_PassiveSkill_Ranger_05": 1,
+                "Part_P_PassiveSkill_Ranger_06": 5,
+                "Part_P_PassiveSkill_Ranger_07": 1,
+                "Part_P_PassiveSkill_Ranger_09": 3,
+                "Part_P_PassiveSkill_Ranger_10": 5,
+                "Part_P_PassiveSkill_Ranger_11": 1,
+                "Part_P_PassiveSkill_Ranger_13": 3,
+                "Part_P_PassiveSkill_Ranger_14": 3,
+                "Part_P_PassiveSkill_Ranger_15": 3,
+                "Part_P_PassiveSkill_Ranger_17": 1,
+            },
+            "Knight": {
+                "Part_P_PassiveSkill_Knight_03": 99,
+                "Part_P_PassiveSkill_Knight_04": 99,
+                "Part_P_PassiveSkill_Knight_14": 99,
+                "Part_P_PassiveSkill_Knight_15": 99,
+                "Part_P_PassiveSkill_Knight_19": 99,
+                "Part_P_PassiveSkill_Knight_21": 99,
+                "Part_P_PassiveSkill_Knight_22": 99,
+                "Part_P_PassiveSkill_Knight_24": 99,
+                "Part_P_PassiveSkill_Knight_25": 99,
+                "Part_P_PassiveSkill_Knight_27": 99,
+                "Part_P_PassiveSkill_Knight_28": 99,
+                "Part_P_PassiveSkill_Knight_29": 99,
+                "Part_P_PassiveSkill_Knight_30": 99,
+            }
+        }
 
     def load(self, filename, type):
         with open(filename, newline='\n') as file:
@@ -152,6 +248,9 @@ class Items:
                 return False
         return True
 
+    def check_amount(self, new_part, prev):
+        return True
+
     def get_random_min_max(self, parts, min, max, prev=[]):
         def sort_fn(elm):
             return elm.parts
@@ -173,7 +272,7 @@ class Items:
                 return ret
             n = random.randint(0, len(pool) - 1)
             target = pool[n]
-            if self.check_excluders(target, prev+ret) and self.check_included(target, prev+ret):
+            if self.check_excluders(target, prev+ret) and self.check_included(target, prev+ret) and self.check_amount(target, prev+ret):
                 ret.append(target)
                 # print(target.parts)
             else:
@@ -252,7 +351,6 @@ class Items:
                     print("{} for {} should be {} min but there is none".format(key, item.balance_short, min))
                 return False
 
-
         for key, value in counts.items():
             min, max = self.get_min_max(item, key)
             if value < min:
@@ -267,6 +365,8 @@ class Items:
         if self.has_excluders(item.balance_short, parts_list_long):
             return False
         if self.missing_dependant(item.balance_short, parts_list_long):
+            return False
+        if self.wrong_amount(item.balance_short, parts_list_long):
             return False
 
         if not silent:
@@ -302,36 +402,71 @@ class Items:
                         print('{} is a passive stat in the same cluster as {}'.format(part_name, part2_name))
                     return False
 
+    def wrong_amount(self, balance, parts_target):
+        parts_multiples = {}
+        for part in parts_target:
+            part_name = part.replace('\\', '/')
+            cat = self.get_category(balance, part_name.split(".")[-1])
+            multiple = ["MINOR", "PASSIVE SKILL PARTS", "PLAYER STAT"]
+            if cat in multiple:
+                if cat not in parts_multiples:
+                    parts_multiples[cat] = []
+                parts_multiples[cat].append(part)
+        # check passive skill amount
+        detail = {}
+        if "PASSIVE SKILL PARTS" in parts_multiples:
+            parts = parts_multiples["PASSIVE SKILL PARTS"]
+            for part in parts:
+                part_name = part.replace('\\', '/').split(".")[-1]
+                character = part_name.split("PassiveSkill_")[1].split("_")[0]
+                if character not in detail:
+                    detail[character] = {}
+                if part_name not in detail[character]:
+                    detail[character][part_name] = 0
+                detail[character][part_name] += 1
+            for character, values in detail.items():
+                to_check = self.passive_skils[character]
+                for skill_name, value in values.items():
+                    if value > to_check[skill_name]:
+                        print("{} part is limited to {} but there is {} for {}".format(skill_name, to_check[skill_name], value, balance))
+                        return True
+        return False
+
     def missing_dependant(self, balance, parts_target):
         whatihave = {}
-        whatineed = {}
         for part in parts_target:
             part_name = part.replace('\\', '/')
             cat = self.get_category(balance, part_name.split(".")[-1])
             if cat not in whatihave:
                 whatihave[cat] = []
             whatihave[cat].append(part.split(".")[0])
+
+        # for each parts, check if i got everything i need
+        for part in parts_target:
+            part_name = part.replace('\\', '/')
             dependencies = self.get_dependant(balance, part_name.split(".")[0])
+            whatineed = {}
             for elm in dependencies:
                 cat = self.get_category(balance, elm.replace('\\', '/').split('/')[-1])
                 if not cat:
                     continue
+                if cat not in whatihave:
+                    print("Missing {} parts needed for {}".format(cat, balance))
+                    return True
                 if cat not in whatineed:
                     whatineed[cat] = []
-                whatineed[cat].append(elm.split(".")[-1])
+                whatineed[cat].append(elm)
 
-        # return True if one value of whatihave is in whatineed for each key
-        for key, value in whatineed.items():
-            if key not in whatihave:
-                return True
-            found = False
-            for elm in value:
-                if elm in whatihave[key]:
-                    found = True
-                    break
-            if not found:
-                print("Missing dependency {} for {}".format(elm, key))
-                return True
+            for cat, values in whatineed.items():
+                to_check = whatihave[cat]
+                found = False
+                for value in values:
+                    if value in to_check:
+                        found = True
+                        break
+                if not found:
+                    print("Missing {} for {} on {}".format(value, part, cat))
+                    return True
         return False
 
     def has_excluders(self, balance, parts_target):

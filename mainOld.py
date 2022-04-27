@@ -21,9 +21,21 @@ if __name__ == '__main__':
     amulet_theruge = "TTW(BQAAAABiwIA7HyLAgDKuMpbygwMAAAA=)"
     ring = "TTW(BQAAAABMOYC7JioAgTKAeEREJqAAAAAA)"
     crash = "TTW(BQAAAACya4A7ecCAgJIckMhDSCwOJ6mXqAOKVVCZICAEAAAAAAAgAwIAAA==)"
-    item = db.reverse_item_serial(mod_bladesinger)
-    new_item = db.generate_random(item)
-    print(new_item.get_serial_base64())
+    mod_test_good = "TTW(BQAAAABHDoC7hwbBh4oEEHAeDHfLIUzmnIvFOedigQgizSCCgQAAAAAY)"
+    mod_test_missing_ranger = "TTW(BQAAAADJE4C7hwbBh4oEEHAeDHfLIUzmnIvFOef2g0gOiDSDgQAAAAAY)"
+    mod_test_rogue_not_medium = "TTW(BQAAAAAXpIC7hwbBh4oEEJAeDHfLIUzmnIPOOef2g0gOiDSDgQAAAAAY)"
+    mod_test_passive_from_outside = "TTW(BQAAAAAR+4C7hwbBh4oEEHAeDHfLIUzmnIPOOef2g0gOiDSDgQAAAAAY)"
+    mod_test_duplicate_rarity = "TTW(BQAAAAAiV4C7hwbBh5IEEJAeDHfLIUzmnHPOOef2g0gOiDTTDAYCAAAAAA==)"
+    for serial in [
+        # mod_test_good,
+        mod_bladesinger,
+        # mod_test_too_much,
+        # mod_test_duplicate_rarity,
+    ]:
+        item = db.reverse_item_serial(serial)
+        print(db.is_legit(item))
+    # new_item = db.generate_random(item)
+    # print(new_item.get_serial_base64())
 
     # __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
     # save_a = WonderlandsSave(os.path.join(__location__, "saves_test/9.sav"))
