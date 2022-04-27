@@ -33,6 +33,7 @@ if __name__ == '__main__':
     gneu2 = "TTW(BQAAAACntIC7ECLAgCqm0loABwAAAA==)"
     gneu3 = "TTW(BQAAAADlDIC7/i2AgToClNiWRzoogwMABAA=)"
     gneu4 = "TTW(BQAAAACZHIA7EGJAETIErDRTgKYAAAAE)"
+    tide = "TTW(BQAAAADl1oC7hwbBh4oEEJAeC3e7IUzpPpHvE+fkg0gOiDSDgQAAAAAY)"
     # for serial in [
     #     liquid_cooling,
     #     materwork,
