@@ -40,21 +40,21 @@ class Items:
                 "Part_P_PassiveSkill_GunMage_20": 1,
                 "Part_P_PassiveSkill_GunMage_21": 3,
             },
-            "Necro": {
-                "Part_P_PassiveSkill_Necro_01": 5,
-                "Part_P_PassiveSkill_Necro_02": 5,
-                "Part_P_PassiveSkill_Necro_03": 3,
-                "Part_P_PassiveSkill_Necro_04": 3,
-                "Part_P_PassiveSkill_Necro_05": 5,
-                "Part_P_PassiveSkill_Necro_06": 1,
-                "Part_P_PassiveSkill_Necro_08": 3,
-                "Part_P_PassiveSkill_Necro_09": 1,
-                "Part_P_PassiveSkill_Necro_10": 1,
-                "Part_P_PassiveSkill_Necro_12": 5,
-                "Part_P_PassiveSkill_Necro_13": 3,
-                "Part_P_PassiveSkill_Necro_14": 5,
-                "Part_P_PassiveSkill_Necro_15": 3,
-                "Part_P_PassiveSkill_Necro_17": 1,
+            "Necromancer": {
+                "Part_P_PassiveSkill_Necromancer_01": 5,
+                "Part_P_PassiveSkill_Necromancer_02": 5,
+                "Part_P_PassiveSkill_Necromancer_03": 3,
+                "Part_P_PassiveSkill_Necromancer_04": 3,
+                "Part_P_PassiveSkill_Necromancer_05": 5,
+                "Part_P_PassiveSkill_Necromancer_06": 1,
+                "Part_P_PassiveSkill_Necromancer_08": 3,
+                "Part_P_PassiveSkill_Necromancer_09": 1,
+                "Part_P_PassiveSkill_Necromancer_10": 1,
+                "Part_P_PassiveSkill_Necromancer_12": 5,
+                "Part_P_PassiveSkill_Necromancer_13": 3,
+                "Part_P_PassiveSkill_Necromancer_14": 5,
+                "Part_P_PassiveSkill_Necromancer_15": 3,
+                "Part_P_PassiveSkill_Necromancer_17": 1,
             },
             "Barbarian": {
                 "Part_P_PassiveSkill_Barbarian_01": 5,
@@ -128,9 +128,12 @@ class Items:
 
     def get_category(self, balance_short, part):
         parts = self.items.get(balance_short, [])
-        for elm in parts:
-            if elm.parts and elm.parts.replace('\\', '/').split('/')[-1] == part:
-                return elm.category
+        for index, elm in enumerate(parts):
+            if elm.parts:
+                part_name = elm.parts.replace('\\', '/').split('/')[-1]
+                if part_name == part:
+                    return elm.category
+        return None
 
     def is_in_category(self, item, part, category):
         all_parts = self.get_parts(item.balance_short)
@@ -217,12 +220,14 @@ class Items:
             return True
 
         whatihave = {}
-        whatineed = {}
         rare = False
         for elm in prev:
             if elm.category not in whatihave:
                 whatihave[elm.category] = []
             whatihave[elm.category].append(elm.parts)
+
+        # for each parts, check if i got everything i need
+        whatineed = {}
         for elm in new_part.dependencies:
             part_name = elm.replace('\\', '/').split('/')[-1]
             cat = self.get_category(new_part.balance, part_name)
@@ -236,12 +241,13 @@ class Items:
         # return True if one value of whatihave is in whatineed for each key
         if len(whatineed.keys()) == 0 and rare:
             return False
-        for key, value in whatineed.items():
-            if key not in whatihave:
+        for cat, values in whatineed.items():
+            if cat not in whatihave:
                 return False
+            to_check = whatihave[cat]
             found = False
-            for elm in value:
-                if elm in whatihave[key]:
+            for value in values:
+                if value in to_check:
                     found = True
                     break
             if not found:
@@ -276,9 +282,11 @@ class Items:
                         return False
         return True
 
-    def get_random_min_max(self, parts, min, max, prev=[]):
+    def get_random_min_max(self, parts, min, max, prev=[], seed=None):
         def sort_fn(elm):
             return elm.parts
+        if seed:
+            random.seed(seed)
         ret = []
         pool = []
         for part in parts:
@@ -307,7 +315,7 @@ class Items:
                 random.shuffle(pool)
         return ret
 
-    def get_legit_random_parts(self, item):
+    def get_legit_random_parts(self, item, seed=None):
         new_item_parts = []
         all_parts = self.get_parts(item.balance_short)
         for type, parts in all_parts.items():
@@ -315,7 +323,7 @@ class Items:
                 new_item_parts += parts
                 continue
             min, max = parts[0].min_parts, parts[0].max_parts
-            res = self.get_random_min_max(parts, min, max, new_item_parts)
+            res = self.get_random_min_max(parts, min, max, new_item_parts, seed)
             new_item_parts += res
         return new_item_parts
 
@@ -327,18 +335,19 @@ class Items:
     def get_serial_string(self, item):
         return item.get_serial_base64()
 
-    def generate_random(self, original_item):
+    def generate_random(self, original_item, seed=None):
         serial = original_item.get_serial_base64()
         item = self.reverse_item_serial(serial)
         legit = False
         while not legit:
-            new_parts = self.get_legit_random_parts(item)
+            new_parts = self.get_legit_random_parts(item, seed)
             item.set_parts(new_parts)
             item_type = self.get_random_type()
             item.set_item_type(item_type)
             if self.is_legit(item):
                 legit = True
             else:
+                print(item.get_serial_base64())
                 print("was not legit, generating another one, please wait.")
         return item
 
@@ -368,13 +377,13 @@ class Items:
                     print("{} for {} is not a possible part as {}".format(part_name, item.balance_short, cat))
                 return False
 
-        cats = [item for item in list(all_parts.keys()) if item not in cats]
-        for key in cats:
-            min = all_parts[key][0].min_parts
-            if min > 0:
-                if not silent:
-                    print("{} for {} should be {} min but there is none".format(key, item.balance_short, min))
-                return False
+        # cats = [item for item in list(all_parts.keys()) if item not in cats]
+        # for key in cats:
+        #     min = all_parts[key][0].min_parts
+        #     if min > 0:
+        #         if not silent:
+        #             print("{} for {} should be {} min but there is none".format(key, item.balance_short, min))
+        #         return False
 
         for key, value in counts.items():
             min, max = self.get_min_max(item, key)
@@ -459,6 +468,7 @@ class Items:
 
     def missing_dependant(self, balance, parts_target):
         whatihave = {}
+
         for part in parts_target:
             part_name = part.replace('\\', '/')
             cat = self.get_category(balance, part_name.split(".")[-1])
@@ -471,9 +481,11 @@ class Items:
             part_name = part.replace('\\', '/')
             dependencies = self.get_dependant(balance, part_name.split(".")[0])
             whatineed = {}
+            rare = False
             for elm in dependencies:
                 cat = self.get_category(balance, elm.replace('\\', '/').split('/')[-1])
                 if not cat:
+                    rare = True
                     continue
                 if cat not in whatihave:
                     print("Missing {} parts needed for {}".format(cat, balance))
@@ -482,7 +494,11 @@ class Items:
                     whatineed[cat] = []
                 whatineed[cat].append(elm)
 
+            if len(whatineed.keys()) == 0 and rare:
+                return True
             for cat, values in whatineed.items():
+                if cat not in whatihave:
+                    return True
                 to_check = whatihave[cat]
                 found = False
                 for value in values:

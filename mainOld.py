@@ -1,4 +1,6 @@
 import os
+import random
+import sys
 
 from Items import Items
 from ttw_save_editor.WonderlandsItem import WonderlandsItem
@@ -26,6 +28,7 @@ if __name__ == '__main__':
     mod_test_rogue_not_medium = "TTW(BQAAAAAXpIC7hwbBh4oEEJAeDHfLIUzmnIPOOef2g0gOiDSDgQAAAAAY)"
     mod_test_passive_from_outside = "TTW(BQAAAAAR+4C7hwbBh4oEEHAeDHfLIUzmnIPOOef2g0gOiDSDgQAAAAAY)"
     mod_test_duplicate_rarity = "TTW(BQAAAAAiV4C7hwbBh5IEEJAeDHfLIUzmnHPOOef2g0gOiDTTDAYCAAAAAA==)"
+    mod_weird = "TTW(BQAAAABsaYC7hwbBh4oEEHCeC3fDIUzqoIMOuvymg4hFFjWDgQAAAAAQ)"
     # for serial in [
     #     # mod_test_good,
     #     mod_bladesinger,
@@ -34,9 +37,19 @@ if __name__ == '__main__':
     # ]:
     #     item = db.reverse_item_serial(serial)
     #     print(db.is_legit(item))
+
+    # db.get_category('Balance_Armor_CapeOfTides', 'Part_P_SkillCombo_GunMage_Ranger_01')
+
+    # seed = 8037935898601526959
+    seed = random.randrange(sys.maxsize)
+    rng = random.Random(seed)
+    print("Seed was:", seed)
     item = db.reverse_item_serial(mod_test_good)
-    new_item = db.generate_random(item)
+    new_item = db.generate_random(item, seed=seed)
     print(new_item.get_serial_base64())
+
+    # item = db.reverse_item_serial(mod_weird)
+    # print(db.is_legit(item))
 
     # __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
     # save_a = WonderlandsSave(os.path.join(__location__, "saves_test/9.sav"))
