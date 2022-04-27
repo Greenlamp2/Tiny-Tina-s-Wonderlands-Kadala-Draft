@@ -44,7 +44,7 @@ if __name__ == '__main__':
     seed = random.randrange(sys.maxsize)
     rng = random.Random(seed)
     print("Seed was:", seed)
-    item = db.reverse_item_serial(mod_test_good)
+    item = db.reverse_item_serial(ring)
     new_item = db.generate_random(item, seed=seed)
     print(new_item.get_serial_base64())
 

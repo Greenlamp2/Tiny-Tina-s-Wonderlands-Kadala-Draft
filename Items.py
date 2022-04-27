@@ -280,6 +280,19 @@ class Items:
                 for skill_name, value in values.items():
                     if value > to_check[skill_name]:
                         return False
+
+        if "MINOR" in parts_multiples:
+            detail = {}
+            parts = parts_multiples["MINOR"]
+            for part in parts:
+                part_name = part.replace('\\', '/').split(".")[-1]
+                part_name_short = part_name.split("/")[-1]
+                if part_name_short not in detail:
+                    detail[part_name_short] = 0
+                detail[part_name_short] += 1
+            for part_elm, value in detail.items():
+                if value > 3:
+                    return False
         return True
 
     def get_random_min_max(self, parts, min, max, prev=[], seed=None):
@@ -464,6 +477,19 @@ class Items:
                     if value > to_check[skill_name]:
                         print("{} part is limited to {} but there is {} for {}".format(skill_name, to_check[skill_name], value, balance))
                         return True
+
+        if "MINOR" in parts_multiples:
+            detail = {}
+            parts = parts_multiples["MINOR"]
+            for part in parts:
+                part_name = part.replace('\\', '/').split(".")[-1]
+                if part_name not in detail:
+                    detail[part_name] = 0
+                detail[part_name] += 1
+            for part_elm, value in detail.items():
+                if value > 3:
+                    print("{} part is limited to 3 but there is {} for {}".format(skill_name, value, balance))
+                    return True
         return False
 
     def missing_dependant(self, balance, parts_target):
