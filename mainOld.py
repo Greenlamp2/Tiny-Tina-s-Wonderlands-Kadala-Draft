@@ -29,11 +29,14 @@ if __name__ == '__main__':
     mod_test_passive_from_outside = "TTW(BQAAAAAR+4C7hwbBh4oEEHAeDHfLIUzmnIPOOef2g0gOiDSDgQAAAAAY)"
     mod_test_duplicate_rarity = "TTW(BQAAAAAiV4C7hwbBh5IEEJAeDHfLIUzmnHPOOef2g0gOiDTTDAYCAAAAAA==)"
     mod_weird = "TTW(BQAAAABsaYC7hwbBh4oEEHCeC3fDIUzqoIMOuvymg4hFFjWDgQAAAAAQ)"
+    gneu = "TTW(BQAAAADVdIA7McGAgIIcD0hES7VOWCNNKIbZZsKAEAAAAAAAYIwBBAE=)"
+    gneu2 = "TTW(BQAAAACntIC7ECLAgCqm0loABwAAAA==)"
+    gneu3 = "TTW(BQAAAADlDIC7/i2AgToClNiWRzoogwMABAA=)"
+    gneu4 = "TTW(BQAAAACZHIA7EGJAETIErDRTgKYAAAAE)"
     # for serial in [
-    #     # mod_test_good,
-    #     mod_bladesinger,
-    #     # mod_test_too_much,
-    #     # mod_test_duplicate_rarity,
+    #     liquid_cooling,
+    #     materwork,
+    #     spellblade
     # ]:
     #     item = db.reverse_item_serial(serial)
     #     print(db.is_legit(item))
@@ -44,14 +47,15 @@ if __name__ == '__main__':
     seed = random.randrange(sys.maxsize)
     rng = random.Random(seed)
     print("Seed was:", seed)
-    item = db.reverse_item_serial(ring)
-    new_item = db.generate_random(item, seed=seed)
-    print(new_item.get_serial_base64())
+    # item = db.reverse_item_serial(gneu4)
+    # new_item = db.generate_random(item, seed=5508852444783207627)
+    # print(new_item.get_serial_base64())
 
-    # item = db.reverse_item_serial(mod_weird)
+    # item = db.reverse_item_serial(gneu)
     # print(db.is_legit(item))
 
-    # __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-    # save_a = WonderlandsSave(os.path.join(__location__, "saves_test/9.sav"))
-    # save_a.generate_random_item(db, item, 1)
+    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+    save_a = WonderlandsSave(os.path.join(__location__, "saves_test/1.sav"))
+    for item in save_a.get_items():
+        new_item = db.generate_random(item, seed=seed)
     # save_a.save_to("saves_test/9.sav")
